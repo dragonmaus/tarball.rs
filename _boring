@@ -1,0 +1,5 @@
+\.rs\.bk$
+^\.git($|/)
+^\.pijul($|/)
+^_darcs($|/)
+^target($|/)
