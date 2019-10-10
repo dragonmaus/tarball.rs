@@ -24,7 +24,7 @@ fn main() -> ! {
 
 #[rustfmt::skip]
 fn print_usage(program: &str) -> Result<i32, Box<dyn Error>> {
-    println!("Usage: {} [-0123456789ghmqvx] [-I file] [-i pattern] [-o file] path [path ...]", program);
+    println!("Usage: {} [-0123456789ghmqvx] [-I file] [-i pattern] [-f file] path [path ...]", program);
     println!("  -0       no compression");
     println!("  -1       fastest compression");
     println!("   …");
@@ -37,7 +37,7 @@ fn print_usage(program: &str) -> Result<i32, Box<dyn Error>> {
     println!("  -l       follow symlinks");
     println!("  -m       create a minimal archive");
     println!();
-    println!("  -o FILE  archive all arguments into FILE");
+    println!("  -f FILE  archive all arguments into FILE");
     println!();
     println!("  -i GLOB  ignore files matching gitignore pattern GLOB");
     println!("  -I FILE  ignore files matching gitignore patterns in FILE");
@@ -53,7 +53,7 @@ fn print_usage(program: &str) -> Result<i32, Box<dyn Error>> {
 fn program() -> Result<i32, Box<dyn Error>> {
     let program = program_name("tarball");
     let mut args = program_args();
-    let mut opts = Parser::new(&args, "0123456789I:bghi:lmo:qvx");
+    let mut opts = Parser::new(&args, "0123456789I:bf:ghi:lmqvx");
 
     let mut compressor = Compressor::None;
     let mut filename: Option<String> = None;
@@ -70,12 +70,12 @@ fn program() -> Result<i32, Box<dyn Error>> {
             Some(opt) => match opt {
                 Opt('I', Some(arg)) => ignore_files.push(arg),
                 Opt('b', None) => compressor = Compressor::BZip,
+                Opt('f', Some(arg)) => filename = Some(arg),
                 Opt('g', None) => compressor = Compressor::GZip,
                 Opt('h', None) => return print_usage(&program),
                 Opt('i', Some(arg)) => ignore_globs.push(arg),
                 Opt('l', None) => follow_symlinks = true,
                 Opt('m', None) => mode = Mode::Minimal,
-                Opt('o', Some(arg)) => filename = Some(arg),
                 Opt('q', None) => verbosity -= 1,
                 Opt('v', None) => verbosity += 1,
                 Opt('x', None) => compressor = Compressor::XZip,
