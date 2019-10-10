@@ -7,9 +7,9 @@ pub struct Builder {
 }
 
 impl Builder {
-    pub fn new(file: File, mode: &Mode, compressor: &Compressor, level: Compression) -> Builder {
+    pub fn new(file: File, mode: &Mode, follow_symlinks: bool, compressor: &Compressor, level: Compression) -> Builder {
         let mut builder = tar::Builder::new(Output::new(file, compressor, level));
-        builder.follow_symlinks(true);
+        builder.follow_symlinks(follow_symlinks);
         builder.mode(match mode {
             Mode::Minimal => tar::HeaderMode::Deterministic,
             Mode::Normal => tar::HeaderMode::Complete,

@@ -34,6 +34,7 @@ fn print_usage(program: &str) -> Result<i32, Box<dyn Error>> {
     println!("  -g       compress with gzip");
     println!("  -x       compress with xz");
     println!();
+    println!("  -l       follow symlinks");
     println!("  -m       create a minimal archive");
     println!();
     println!("  -o FILE  archive all arguments into FILE");
@@ -52,10 +53,11 @@ fn print_usage(program: &str) -> Result<i32, Box<dyn Error>> {
 fn program() -> Result<i32, Box<dyn Error>> {
     let program = program_name("tarball");
     let mut args = program_args();
-    let mut opts = Parser::new(&args, "0123456789I:bghi:mo:qvx");
+    let mut opts = Parser::new(&args, "0123456789I:bghi:lmo:qvx");
 
     let mut compressor = Compressor::None;
     let mut filename: Option<String> = None;
+    let mut follow_symlinks = false;
     let mut ignore_files: Vec<String> = Vec::new();
     let mut ignore_globs: Vec<String> = Vec::new();
     let mut level = Compression::default();
@@ -71,6 +73,7 @@ fn program() -> Result<i32, Box<dyn Error>> {
                 Opt('g', None) => compressor = Compressor::GZip,
                 Opt('h', None) => return print_usage(&program),
                 Opt('i', Some(arg)) => ignore_globs.push(arg),
+                Opt('l', None) => follow_symlinks = true,
                 Opt('m', None) => mode = Mode::Minimal,
                 Opt('o', Some(arg)) => filename = Some(arg),
                 Opt('q', None) => verbosity -= 1,
@@ -88,7 +91,7 @@ fn program() -> Result<i32, Box<dyn Error>> {
 
     if let Some(filename) = filename {
         let file = File::create(&filename)?;
-        let mut tarball = Builder::new(file, &mode, &compressor, level);
+        let mut tarball = Builder::new(file, &mode, follow_symlinks, &compressor, level);
 
         let args = args.as_mut_slice();
         args.sort_unstable();
@@ -119,7 +122,7 @@ fn program() -> Result<i32, Box<dyn Error>> {
                 Compressor::XZip => format!("{}.tar.xz", path),
             };
             let file = File::create(&filename)?;
-            let mut tarball = Builder::new(file, &mode, &compressor, level);
+            let mut tarball = Builder::new(file, &mode, follow_symlinks, &compressor, level);
 
             append_tree(&mut tarball, &path, &ignore_files, &ignore_globs, verbosity)?;
 
