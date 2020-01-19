@@ -1,14 +1,7 @@
 use filetime::{set_file_times, FileTime};
 use getopt::prelude::*;
 use ignore::{overrides::OverrideBuilder, WalkBuilder};
-use std::{
-    env,
-    error::Error,
-    fs::{self},
-    io,
-    path::Path,
-    process,
-};
+use std::{env, error::Error, fs, io, path::Path, process};
 
 use tarball::{Codec, CompressedFile, Compression, Mode};
 
