@@ -1,48 +1,65 @@
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub struct Compression(u32);
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Compression {
+    Default,
+    Maximum,
+    Minimum,
+}
 
 impl Compression {
-    pub fn new(level: u32) -> Compression {
-        Compression(level)
+    pub fn best() -> Self {
+        Compression::Maximum
     }
 
-    pub fn none() -> Compression {
-        Compression(0)
+    pub fn fast() -> Self {
+        Compression::Minimum
     }
 
-    pub fn fast() -> Compression {
-        Compression(1)
+    pub fn into_custom(self, min: u32, max: u32, def: u32) -> u32 {
+        match self {
+            Compression::Default => def,
+            Compression::Maximum => max,
+            Compression::Minimum => min,
+        }
     }
 
-    pub fn best() -> Compression {
-        Compression(9)
-    }
-
-    pub fn level(self) -> u32 {
-        self.0
+    pub fn into_custom_signed(self, min: i32, max: i32, def: i32) -> i32 {
+        match self {
+            Compression::Default => def,
+            Compression::Maximum => max,
+            Compression::Minimum => min,
+        }
     }
 }
 
 impl Default for Compression {
-    fn default() -> Compression {
-        Compression(6)
+    fn default() -> Self {
+        Compression::Default
     }
 }
 
+// Common values
 impl Into<u32> for Compression {
     fn into(self) -> u32 {
-        self.level()
+        self.into_custom(1, 9, 6)
     }
 }
 
 impl Into<bzip2::Compression> for Compression {
     fn into(self) -> bzip2::Compression {
-        bzip2::Compression::new(self.level())
+        match self {
+            Compression::Default => bzip2::Compression::default(),
+            Compression::Maximum => bzip2::Compression::best(),
+            Compression::Minimum => bzip2::Compression::fast(),
+        }
     }
 }
 
 impl Into<flate2::Compression> for Compression {
     fn into(self) -> flate2::Compression {
-        flate2::Compression::new(self.level())
+        match self {
+            Compression::Default => flate2::Compression::default(),
+            Compression::Maximum => flate2::Compression::best(),
+            Compression::Minimum => flate2::Compression::fast(),
+        }
     }
 }

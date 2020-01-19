@@ -4,13 +4,13 @@ use ignore::{overrides::OverrideBuilder, WalkBuilder};
 use std::{
     env,
     error::Error,
-    fs::{self, File},
+    fs::{self},
     io,
     path::Path,
     process,
 };
 
-use tarball::{Builder, Compression, Compressor, Mode};
+use tarball::{Codec, CompressedFile, Compression, Mode};
 
 fn main() -> ! {
     process::exit(match program() {
@@ -25,17 +25,18 @@ fn main() -> ! {
 #[rustfmt::skip]
 fn print_usage(program: &str) -> Result<i32, Box<dyn Error>> {
     println!("Usage: {} [-0123456789ghmqvx] [-I file] [-i pattern] [-f file] path [path ...]", program);
-    println!("  -0       no compression");
     println!("  -1       fastest compression");
-    println!("   …");
     println!("  -9       best compression");
     println!();
     println!("  -b       compress with bzip2");
     println!("  -g       compress with gzip");
+    println!("  -l       compress with lz4");
     println!("  -x       compress with xz");
+    println!("  -z       compress with zstd");
+    println!("  -Z       compress with deflate");
     println!();
-    println!("  -l       follow symlinks");
     println!("  -m       create a minimal archive");
+    println!("  -s       follow symlinks");
     println!();
     println!("  -f FILE  archive all arguments into FILE");
     println!();
@@ -53,9 +54,9 @@ fn print_usage(program: &str) -> Result<i32, Box<dyn Error>> {
 fn program() -> Result<i32, Box<dyn Error>> {
     let program = program_name("tarball");
     let mut args = program_args();
-    let mut opts = Parser::new(&args, "0123456789I:bf:ghi:lmqvx");
+    let mut opts = Parser::new(&args, "19I:Zbf:ghi:lmqsvxz");
 
-    let mut compressor = Compressor::None;
+    let mut codec = Codec::None;
     let mut filename: Option<String> = None;
     let mut follow_symlinks = false;
     let mut ignore_files: Vec<String> = Vec::new();
@@ -68,20 +69,22 @@ fn program() -> Result<i32, Box<dyn Error>> {
         match opts.next().transpose()? {
             None => break,
             Some(opt) => match opt {
+                Opt('1', None) => level = Compression::Minimum,
+                Opt('9', None) => level = Compression::Maximum,
                 Opt('I', Some(arg)) => ignore_files.push(arg),
-                Opt('b', None) => compressor = Compressor::BZip,
+                Opt('Z', None) => codec = Codec::Deflate,
+                Opt('b', None) => codec = Codec::Bzip2,
                 Opt('f', Some(arg)) => filename = Some(arg),
-                Opt('g', None) => compressor = Compressor::GZip,
+                Opt('g', None) => codec = Codec::Gzip,
                 Opt('h', None) => return print_usage(&program),
                 Opt('i', Some(arg)) => ignore_globs.push(arg),
-                Opt('l', None) => follow_symlinks = true,
+                Opt('l', None) => codec = Codec::Lz4,
                 Opt('m', None) => mode = Mode::Minimal,
                 Opt('q', None) => verbosity -= 1,
+                Opt('s', None) => follow_symlinks = true,
                 Opt('v', None) => verbosity += 1,
-                Opt('x', None) => compressor = Compressor::XZip,
-                Opt(c, None) if c.is_ascii_digit() => {
-                    level = Compression::new(c.to_digit(10).unwrap())
-                }
+                Opt('x', None) => codec = Codec::Xz,
+                Opt('z', None) => codec = Codec::Zstd,
                 _ => unreachable!(),
             },
         }
@@ -90,8 +93,14 @@ fn program() -> Result<i32, Box<dyn Error>> {
     let mut args = args.split_off(opts.index());
 
     if let Some(filename) = filename {
-        let file = File::create(&filename)?;
-        let mut tarball = Builder::new(file, &mode, follow_symlinks, &compressor, level);
+        let file = CompressedFile::create(&filename, codec, level)?;
+
+        let mut tarball = tar::Builder::new(file);
+        tarball.follow_symlinks(follow_symlinks);
+        tarball.mode(match mode {
+            Mode::Minimal => tar::HeaderMode::Deterministic,
+            Mode::Normal => tar::HeaderMode::Complete,
+        });
 
         let args = args.as_mut_slice();
         args.sort_unstable();
@@ -108,25 +117,26 @@ fn program() -> Result<i32, Box<dyn Error>> {
             append_tree(&mut tarball, &arg, &ignore_files, &ignore_globs, verbosity)?;
         }
 
-        tarball.finish()?;
+        tarball.into_inner()?.finish()?;
         update_timestamp(&filename, newest.0)?;
         if verbosity >= 1 {
             println!("{} created", &filename);
         }
     } else {
         for path in args {
-            let filename = match compressor {
-                Compressor::None => format!("{}.tar", path),
-                Compressor::GZip => format!("{}.tar.gz", path),
-                Compressor::BZip => format!("{}.tar.bz2", path),
-                Compressor::XZip => format!("{}.tar.xz", path),
-            };
-            let file = File::create(&filename)?;
-            let mut tarball = Builder::new(file, &mode, follow_symlinks, &compressor, level);
+            let filename = format!("{}.tar{}", path, codec.extension());
+            let file = CompressedFile::create(&filename, codec, level)?;
+
+            let mut tarball = tar::Builder::new(file);
+            tarball.follow_symlinks(follow_symlinks);
+            tarball.mode(match mode {
+                Mode::Minimal => tar::HeaderMode::Deterministic,
+                Mode::Normal => tar::HeaderMode::Complete,
+            });
 
             append_tree(&mut tarball, &path, &ignore_files, &ignore_globs, verbosity)?;
 
-            tarball.finish()?;
+            tarball.into_inner()?.finish()?;
             update_timestamp(&filename, &path)?;
             if verbosity >= 1 {
                 println!("{} created", &filename);
@@ -138,7 +148,7 @@ fn program() -> Result<i32, Box<dyn Error>> {
 }
 
 fn append_tree<P: AsRef<Path>>(
-    tarball: &mut Builder,
+    tarball: &mut tar::Builder<CompressedFile>,
     path: P,
     ignore_files: &[String],
     ignore_globs: &[String],

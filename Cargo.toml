@@ -1,7 +1,7 @@
 [package]
 edition = "2018"
 name = "tarball"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["David Wildasin <dragonmaus@posteo.net>"]
 exclude = ["_darcs/*"]
 publish = false
@@ -12,9 +12,11 @@ repository = "https://nest.pijul.com/dragonmaus/tarball"
 
 [dependencies]
 bzip2 = { git = "https://github.com/alexcrichton/bzip2-rs", version = "0.4" }
-getopt = "0.4"
 filetime = "0.2"
 flate2 = "1"
+getopt = "0.4"
 ignore = "0.4"
+lz4 = "1.23"
 tar = "0.4"
 xz2 = "0.1"
+zstd = "0.5"

@@ -1,7 +1,6 @@
-mod builder;
+mod codec;
+mod compressedfile;
 mod compression;
-mod compressor;
 mod mode;
-mod output;
 
-pub use crate::{builder::*, compression::*, compressor::*, mode::*, output::*};
+pub use crate::{codec::*, compressedfile::*, compression::*, mode::*};
