@@ -1,19 +1,19 @@
 [package]
-edition = "2018"
 name = "tarball"
 version = "0.3.2"
 authors = ["David Wildasin <dragonmaus@posteo.net>"]
-publish = false
+edition = "2018"
 description = "A simple utility to easily archive directories"
-categories = ["command-line-utilities"]
-license = "BSD-3-Clause-Clear"
 repository = "https://git.dragonma.us/dragonmaus/tarball.rs"
+license = "BSD-3-Clause-Clear"
+categories = ["command-line-utilities"]
+publish = false
 
 [dependencies]
 bzip2 = { git = "https://github.com/alexcrichton/bzip2-rs", version = "0.4" }
 filetime = "0.2"
 flate2 = "1"
-getopt = "0.4"
+getopt = "1"
 ignore = "0.4"
 lz4 = "1"
 tar = "0.4"
