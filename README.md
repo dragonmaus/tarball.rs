@@ -7,6 +7,5 @@ compressing directory trees.
 - [Crates.io](https://crates.io/crates/tarball)
 - [Documentation](https://docs.rs/tarball/)
 - [Repository](https://nest.pijul.com/dragonmaus/tarball)
-- [Repository mirror (Darcs Hub)](https://hub.darcs.net/dragonmaus/tarball.rs)
-- [Repository mirror (GitLab)](https://gitlab.com/dragonmaus/tarball.rs)
 - [Repository mirror (GitHub)](https://github.com/dragonmaus/tarball.rs)
+- [Repository mirror (Darcs Hub)](https://hub.darcs.net/dragonmaus/tarball.rs)
