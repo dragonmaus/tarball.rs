@@ -16,7 +16,7 @@ fn main() -> ! {
 }
 
 #[rustfmt::skip]
-fn print_usage(program: &str) -> Result<i32, Box<dyn Error>> {
+fn print_usage(program: &str) {
     println!("Usage: {} [-0123456789ghmqvx] [-I file] [-i pattern] [-f file] path [path ...]", program);
     println!("  -1       fastest compression");
     println!("  -9       best compression");
@@ -40,8 +40,6 @@ fn print_usage(program: &str) -> Result<i32, Box<dyn Error>> {
     println!("  -v       print files being archived");
     println!();
     println!("  -h       display this help");
-
-    Ok(0)
 }
 
 fn program() -> Result<i32, Box<dyn Error>> {
@@ -69,7 +67,6 @@ fn program() -> Result<i32, Box<dyn Error>> {
                 Opt('b', None) => codec = Codec::Bzip2,
                 Opt('f', Some(arg)) => filename = Some(arg),
                 Opt('g', None) => codec = Codec::Gzip,
-                Opt('h', None) => return print_usage(&program),
                 Opt('i', Some(arg)) => ignore_globs.push(arg),
                 Opt('l', None) => codec = Codec::Lz4,
                 Opt('m', None) => mode = Mode::Minimal,
@@ -78,6 +75,10 @@ fn program() -> Result<i32, Box<dyn Error>> {
                 Opt('v', None) => verbosity += 1,
                 Opt('x', None) => codec = Codec::Xz,
                 Opt('z', None) => codec = Codec::Zstd,
+                Opt('h', None) => {
+                    print_usage(&program);
+                    return Ok(0);
+                }
                 _ => unreachable!(),
             },
         }
