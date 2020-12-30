@@ -1,23 +1,47 @@
 use filetime::{set_file_times, FileTime};
 use getopt::Opt;
 use ignore::{overrides::OverrideBuilder, WalkBuilder};
-use std::{env, error::Error, fs, io, path::Path, process};
+use std::{error::Error, fs, io, path::Path, process};
 
 use tarball::{Codec, CompressedFile, Compression, Mode};
 
+mod program {
+    use std::{env, error::Error, path::Path};
+
+    pub type Result = std::result::Result<i32, Box<dyn Error>>;
+
+    pub fn args() -> Vec<String> {
+        env::args_os()
+            .map(|a| a.to_string_lossy().into_owned())
+            .collect()
+    }
+
+    pub fn name(default: &str) -> String {
+        match env::args_os().next() {
+            None => String::from(default),
+            Some(os_string) => match Path::new(&os_string).file_stem() {
+                None => String::from(default),
+                Some(os_str) => os_str.to_string_lossy().into_owned(),
+            },
+        }
+    }
+}
+
 fn main() -> ! {
-    process::exit(match program() {
-        Ok(code) => code,
+    let name = program::name("tarball");
+
+    process::exit(match program(&name) {
         Err(error) => {
-            eprintln!("{}", error);
+            eprintln!("{}: {}", name, error);
             1
         }
+        Ok(code) => code,
     });
 }
 
 #[rustfmt::skip]
-fn print_usage(program: &str) {
-    println!("Usage: {} [-0123456789ghmqvx] [-I file] [-i pattern] [-f file] path [path ...]", program);
+fn print_usage(program_name: &str) {
+    println!("Usage: {} [-0123456789ghmqvx] [-I file] [-i pattern] [-f file] path [path ...]", program_name);
     println!("  -1       fastest compression");
     println!("  -9       best compression");
     println!();
@@ -42,9 +66,8 @@ fn print_usage(program: &str) {
     println!("  -h       display this help");
 }
 
-fn program() -> Result<i32, Box<dyn Error>> {
-    let program = program_name("tarball");
-    let mut args = program_args();
+fn program(name: &str) -> program::Result {
+    let mut args = program::args();
     let mut opts = getopt::Parser::new(&args, "19I:Zbf:ghi:lmqsvxz");
 
     let mut codec = Codec::None;
@@ -76,7 +99,7 @@ fn program() -> Result<i32, Box<dyn Error>> {
                 Opt('x', None) => codec = Codec::Xz,
                 Opt('z', None) => codec = Codec::Zstd,
                 Opt('h', None) => {
-                    print_usage(&program);
+                    print_usage(name);
                     return Ok(0);
                 }
                 _ => unreachable!(),
@@ -184,22 +207,6 @@ fn fix_glob(glob: &str) -> String {
 fn get_mtime(path: &str) -> io::Result<FileTime> {
     let meta = fs::metadata(path)?;
     Ok(FileTime::from_last_modification_time(&meta))
-}
-
-fn program_args() -> Vec<String> {
-    env::args_os()
-        .map(|a| a.to_string_lossy().into_owned())
-        .collect()
-}
-
-fn program_name(default: &str) -> String {
-    match env::args_os().next() {
-        None => default.to_string(),
-        Some(os_string) => match Path::new(&os_string).file_name() {
-            None => default.to_string(),
-            Some(os_str) => os_str.to_string_lossy().into_owned(),
-        },
-    }
 }
 
 fn update_timestamp(to: &str, from: &str) -> io::Result<()> {
