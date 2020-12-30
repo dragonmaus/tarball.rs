@@ -1,13 +1,13 @@
 [package]
 name = "tarball"
-version = "0.3.3"
+version = "1.0.0"
 authors = ["David Wildasin <dragonmaus@posteo.net>"]
 edition = "2018"
 description = "A simple utility to easily archive directories"
 repository = "https://git.dragonma.us/dragonmaus/tarball.rs"
 license = "BSD-3-Clause-Clear"
 categories = ["command-line-utilities"]
-publish = false
+publish = true
 
 [dependencies]
 bzip2 = "0.4"
