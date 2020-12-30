@@ -1,5 +1,5 @@
 use filetime::{set_file_times, FileTime};
-use getopt::prelude::*;
+use getopt::Opt;
 use ignore::{overrides::OverrideBuilder, WalkBuilder};
 use std::{env, error::Error, fs, io, path::Path, process};
 
@@ -45,7 +45,7 @@ fn print_usage(program: &str) {
 fn program() -> Result<i32, Box<dyn Error>> {
     let program = program_name("tarball");
     let mut args = program_args();
-    let mut opts = Parser::new(&args, "19I:Zbf:ghi:lmqsvxz");
+    let mut opts = getopt::Parser::new(&args, "19I:Zbf:ghi:lmqsvxz");
 
     let mut codec = Codec::None;
     let mut filename: Option<String> = None;

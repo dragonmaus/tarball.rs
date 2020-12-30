@@ -33,7 +33,8 @@ dependencies = [
 [[package]]
 name = "bzip2"
 version = "0.4.1"
-source = "git+https://github.com/alexcrichton/bzip2-rs#239944b23f73be8d0f17989204ee78cee63e6cb7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "275d84fe348b838dc49477d39770682839b3e73e21a3eadc07b12924f1a9fcbe"
 dependencies = [
  "bzip2-sys",
  "libc",
@@ -42,7 +43,8 @@ dependencies = [
 [[package]]
 name = "bzip2-sys"
 version = "0.1.9+1.0.8"
-source = "git+https://github.com/alexcrichton/bzip2-rs#239944b23f73be8d0f17989204ee78cee63e6cb7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ad3b39a260062fca31f7b0b12f207e8f2590a67d32ec7d59c20484b07ea7285e"
 dependencies = [
  "cc",
  "libc",
@@ -128,9 +130,9 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
 name = "getopt"
-version = "1.0.3"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0896f7540f160b6f271ce25cc7076802de8bea22ec3b58a75f6670de81f98d4e"
+checksum = "285cb971bc8c03a00e74dd45a6b23bda02425336a6f23231fec898f796ac49a2"
 
 [[package]]
 name = "glob"
@@ -392,18 +394,18 @@ dependencies = [
 
 [[package]]
 name = "zstd"
-version = "0.5.4+zstd.1.4.7"
+version = "0.6.0+zstd.1.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69996ebdb1ba8b1517f61387a883857818a66c8a295f487b1ffd8fd9d2c82910"
+checksum = "d4e44664feba7f2f1a9f300c1f6157f2d1bfc3c15c6f3cf4beabf3f5abe9c237"
 dependencies = [
  "zstd-safe",
 ]
 
 [[package]]
 name = "zstd-safe"
-version = "2.0.6+zstd.1.4.7"
+version = "3.0.0+zstd.1.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98aa931fb69ecee256d44589d19754e61851ae4769bf963b385119b1cc37a49e"
+checksum = "d9447afcd795693ad59918c7bbffe42fdd6e467d708f3537e3dc14dc598c573f"
 dependencies = [
  "libc",
  "zstd-sys",
@@ -411,9 +413,9 @@ dependencies = [
 
 [[package]]
 name = "zstd-sys"
-version = "1.4.18+zstd.1.4.7"
+version = "1.4.19+zstd.1.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1e6e8778706838f43f771d80d37787cb2fe06dafe89dd3aebaf6721b9eaec81"
+checksum = "ec24a9273d24437afb8e71b16f3d9a5d569193cccdb7896213b59f552f387674"
 dependencies = [
  "cc",
  "glob",

@@ -5,17 +5,17 @@ use std::{
 
 use crate::{Codec, Compression};
 
-pub enum CompressedFile {
+pub enum CompressedFile<'a> {
     File(File),
     Bzip2(bzip2::write::BzEncoder<File>),
     Deflate(flate2::write::DeflateEncoder<File>),
     Gzip(flate2::write::GzEncoder<File>),
     Lz4(lz4::Encoder<File>),
     Xz(xz2::write::XzEncoder<File>),
-    Zstd(zstd::stream::write::Encoder<File>),
+    Zstd(zstd::stream::write::Encoder<'a, File>),
 }
 
-impl CompressedFile {
+impl<'a> CompressedFile<'a> {
     pub fn create(name: &str, codec: Codec, level: Compression) -> io::Result<Self> {
         let file = File::create(name)?;
         Ok(match codec {
@@ -49,7 +49,7 @@ impl CompressedFile {
     }
 }
 
-impl Write for CompressedFile {
+impl<'a> Write for CompressedFile<'a> {
     fn flush(&mut self) -> io::Result<()> {
         match self {
             Self::File(writer) => writer.flush(),
