@@ -38,15 +38,19 @@ impl Default for Compression {
 }
 
 // Common values
-impl Into<u32> for Compression {
-    fn into(self) -> u32 {
-        self.into_custom(1, 9, 6)
+impl From<Compression> for u32 {
+    fn from(c: Compression) -> u32 {
+        match c {
+            Compression::Default => 6,
+            Compression::Maximum => 9,
+            Compression::Minimum => 1,
+        }
     }
 }
 
-impl Into<bzip2::Compression> for Compression {
-    fn into(self) -> bzip2::Compression {
-        match self {
+impl From<Compression> for bzip2::Compression {
+    fn from(c: Compression) -> bzip2::Compression {
+        match c {
             Compression::Default => bzip2::Compression::default(),
             Compression::Maximum => bzip2::Compression::best(),
             Compression::Minimum => bzip2::Compression::fast(),
@@ -54,9 +58,9 @@ impl Into<bzip2::Compression> for Compression {
     }
 }
 
-impl Into<flate2::Compression> for Compression {
-    fn into(self) -> flate2::Compression {
-        match self {
+impl From<Compression> for flate2::Compression {
+    fn from(c: Compression) -> flate2::Compression {
+        match c {
             Compression::Default => flate2::Compression::default(),
             Compression::Maximum => flate2::Compression::best(),
             Compression::Minimum => flate2::Compression::fast(),

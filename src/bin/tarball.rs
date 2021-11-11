@@ -178,7 +178,7 @@ fn append_tree<P: AsRef<Path>>(
     if !ignore_globs.is_empty() {
         let mut overrides = OverrideBuilder::new(&path);
         for ignore_glob in ignore_globs {
-            overrides.add(&fix_glob(&ignore_glob))?;
+            overrides.add(&fix_glob(ignore_glob))?;
         }
         walker.overrides(overrides.build()?);
     }
