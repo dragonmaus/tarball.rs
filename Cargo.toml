@@ -2,7 +2,7 @@
 name = "tarball"
 version = "1.0.1"
 authors = ["David Wildasin <dragonmaus@posteo.net>"]
-edition = "2018"
+edition = "2021"
 description = "A simple utility to easily archive directories"
 repository = "https://git.dragonma.us/dragonmaus/tarball.rs"
 license = "BSD-3-Clause-Clear"
