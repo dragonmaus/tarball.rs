@@ -5,5 +5,5 @@ compressing directory trees.
 
 ## Links:
 - Crate: [Crates.io](https://crates.io/crates/tarball) / [Lib.rs](https://lib.rs/crates/tarball)
-- Source: [Gitea](https://git.dragonma.us/dragonmaus/tarball.rs) / [GitHub](https://github.com/dragonmaus/tarball.rs)
+- Source: [Main](https://git.dragonma.us/rust/tarball) / [Mirror](https://github.com/dragonmaus/tarball.rs)
 - Documentation [Docs.rs](https://docs.rs/tarball/)
