@@ -1,8 +1,8 @@
 [package]
 name = "tarball"
-version = "1.0.2"
+version = "1.0.3"
 authors = ["David Wildasin <dragonmaus@posteo.net>"]
-edition = "2021"
+edition = "2018"
 description = "A simple utility to easily archive directories"
 repository = "https://git.dragonma.us/rust/tarball"
 license = "BSD-3-Clause-Clear"
