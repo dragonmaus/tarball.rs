@@ -1,6 +1,6 @@
 [package]
 name = "tarball"
-version = "1.0.5"
+version = "1.0.6"
 authors = ["David Wildasin <dragonmaus@posteo.net>"]
 edition = "2021"
 description = "A simple utility to easily archive directories"
@@ -18,4 +18,4 @@ ignore = "0.4"
 lz4 = "1"
 tar = "0.4"
 xz2 = "0.1"
-zstd = "0.9"
+zstd = "0.13"
