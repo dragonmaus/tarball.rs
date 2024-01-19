@@ -34,7 +34,7 @@ fn main() -> ! {
         Err(error) => {
             eprintln!("{}: {}", name, error);
             1
-        }
+        },
         Ok(code) => code,
     });
 }
@@ -101,7 +101,7 @@ fn program(name: &str) -> program::Result {
                 Opt('h', None) => {
                     print_usage(name);
                     return Ok(0);
-                }
+                },
                 _ => unreachable!(),
             },
         }
@@ -190,7 +190,7 @@ fn append_tree<P: AsRef<Path>>(
         if verbosity >= 2 {
             println!("{}", entry.path().display());
         }
-        tarball.append_path(&entry.path())?;
+        tarball.append_path(entry.path())?;
     }
 
     Ok(())
@@ -201,7 +201,7 @@ fn fix_glob(glob: &str) -> String {
     if chars.next() == Some('!') {
         return chars.as_str().into();
     }
-    return format!("!{}", glob);
+    format!("!{}", glob)
 }
 
 fn get_mtime(path: &str) -> io::Result<FileTime> {

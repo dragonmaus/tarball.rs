@@ -1,5 +1,6 @@
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum Codec {
+    #[default]
     None,
     Bzip2,
     Deflate,
@@ -7,12 +8,6 @@ pub enum Codec {
     Lz4,
     Xz,
     Zstd,
-}
-
-impl Default for Codec {
-    fn default() -> Self {
-        Codec::None
-    }
 }
 
 impl Codec {

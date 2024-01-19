@@ -1,5 +1,6 @@
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum Compression {
+    #[default]
     Default,
     Maximum,
     Minimum,
@@ -28,12 +29,6 @@ impl Compression {
             Compression::Maximum => max,
             Compression::Minimum => min,
         }
-    }
-}
-
-impl Default for Compression {
-    fn default() -> Self {
-        Compression::Default
     }
 }
 
